@@ -1,0 +1,16 @@
+name: Dependency Action
+description: Downloads and extracts dependencies required by workflow jobs.
+author: Ed King
+inputs:
+  url:
+    description: The URL of the dependency to download.
+    required: true
+  filename:
+    description: The name to give to the dependency on the filesystem.
+    required: true
+runs:
+  using: docker
+  image: Dockerfile
+branding:
+  icon: arrow-down
+  color: white
