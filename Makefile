@@ -9,14 +9,6 @@ clean:
 image:
 	docker build .
 
-test: ginkgo
-	$(GINKGO) acceptance
-
-# download ginkgo if necessary
-ginkgo:
-ifeq (, $(shell which ginkgo))
+test:
 	go get github.com/onsi/ginkgo/ginkgo
-GINKGO=$(GOBIN)/ginkgo
-else
-GINKGO=$(shell which ginkgo)
-endif
+	ginkgo acceptance
