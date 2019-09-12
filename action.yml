@@ -7,7 +7,7 @@ inputs:
     required: false
 runs:
   using: docker
-  image: teddyking/dependency-action:latest
+  image: Dockerfile
 branding:
   icon: arrow-down
   color: white
