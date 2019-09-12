@@ -61,4 +61,22 @@ var _ = Describe("the dependency-action binary", func() {
 			Expect(filepath.Join(testHomeDir, "dep1", "bin", "cake")).To(BeAnExistingFile())
 		})
 	})
+
+	When("the INPUT_TGZDEPS env var is set and has > 1 dependency", func() {
+		BeforeEach(func() {
+			env = append(env, []string{
+				fmt.Sprintf("INPUT_TGZDEPS=%s/dep1.tgz,%s/dep2.tgz", testAssetsURL, testAssetsURL),
+			}...)
+		})
+
+		It("downloads and extracts the tgz dependencies to $HOME", func() {
+			Eventually(session).Should(Exit(0))
+
+			Expect(filepath.Join(testHomeDir, "dep1")).To(BeADirectory())
+			Expect(filepath.Join(testHomeDir, "dep1", "bin", "cake")).To(BeAnExistingFile())
+
+			Expect(filepath.Join(testHomeDir, "dep2")).To(BeADirectory())
+			Expect(filepath.Join(testHomeDir, "dep2", "bin", "cake")).To(BeAnExistingFile())
+		})
+	})
 })

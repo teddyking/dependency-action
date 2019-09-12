@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/codeclysm/extract"
 )
@@ -13,18 +14,21 @@ import (
 func main() {
 	fmt.Println("oh boy, here I go downloadin' again!")
 
-	tgzDepURL := os.Getenv("INPUT_TGZDEPS")
-	if tgzDepURL == "" {
+	if os.Getenv("INPUT_TGZDEPS") == "" {
 		os.Exit(0)
 	}
 
-	resp, err := http.Get(tgzDepURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer resp.Body.Close()
+	tgzDepURLs := strings.Split(os.Getenv("INPUT_TGZDEPS"), ",")
 
-	if err := extract.Gz(context.Background(), resp.Body, os.Getenv("HOME"), nil); err != nil {
-		log.Fatal(err)
+	for _, tgzDepURL := range tgzDepURLs {
+		resp, err := http.Get(tgzDepURL)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+
+		if err := extract.Gz(context.Background(), resp.Body, os.Getenv("HOME"), nil); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
