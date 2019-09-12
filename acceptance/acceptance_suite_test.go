@@ -8,6 +8,8 @@ import (
 	. "github.com/onsi/gomega/gexec"
 )
 
+const testAssetsURL = "https://raw.githubusercontent.com/teddyking/dependency-action/master/acceptance/assets"
+
 var pathToActionBinary string
 
 func TestAcceptance(t *testing.T) {
