@@ -9,6 +9,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gbytes"
 	. "github.com/onsi/gomega/gexec"
 )
 
@@ -77,6 +78,22 @@ var _ = Describe("the dependency-action binary", func() {
 
 			Expect(filepath.Join(testHomeDir, "dep2")).To(BeADirectory())
 			Expect(filepath.Join(testHomeDir, "dep2", "bin", "cake")).To(BeAnExistingFile())
+		})
+	})
+
+	When("the INPUT_TGZDEPS env var is set to a URL that does point to a .tgz file", func() {
+		BeforeEach(func() {
+			env = append(env, []string{
+				"INPUT_TGZDEPS=https://github.com",
+			}...)
+		})
+
+		It("exits with an exit code of 1", func() {
+			Eventually(session).Should(Exit(1))
+		})
+
+		It("prints an informative error message to stdout", func() {
+			Eventually(session.Err).Should(Say("ERROR: unable to extract file at 'https://github.com', ensure it is a valid .tar.gz file"))
 		})
 	})
 })

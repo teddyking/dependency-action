@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -12,8 +11,6 @@ import (
 )
 
 func main() {
-	fmt.Println("oh boy, here I go downloadin' again!")
-
 	if os.Getenv("INPUT_TGZDEPS") == "" {
 		os.Exit(0)
 	}
@@ -23,12 +20,14 @@ func main() {
 	for _, tgzDepURL := range tgzDepURLs {
 		resp, err := http.Get(tgzDepURL)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Fprintf(os.Stderr, "ERROR: unable to download file at '%s'", tgzDepURL)
+			os.Exit(1)
 		}
 		defer resp.Body.Close()
 
 		if err := extract.Gz(context.Background(), resp.Body, os.Getenv("HOME"), nil); err != nil {
-			log.Fatal(err)
+			fmt.Fprintf(os.Stderr, "ERROR: unable to extract file at '%s', ensure it is a valid .tar.gz file", tgzDepURL)
+			os.Exit(1)
 		}
 	}
 }
