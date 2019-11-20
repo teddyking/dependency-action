@@ -81,7 +81,7 @@ var _ = Describe("the dependency-action binary", func() {
 		})
 	})
 
-	When("the INPUT_TGZDEPS env var is set to a URL that does point to a .tgz file", func() {
+	When("the INPUT_TGZDEPS env var is set to a URL that does not point to a .tgz file", func() {
 		BeforeEach(func() {
 			env = append(env, []string{
 				"INPUT_TGZDEPS=https://github.com",
