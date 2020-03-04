@@ -48,14 +48,14 @@ var _ = Describe("the dependency-action binary", func() {
 		Eventually(session).Should(Exit(0))
 	})
 
-	When("the INPUT_TGZDEPS env var is set", func() {
+	When("the INPUT_DEPS env var is set and contains 1 tgz file url", func() {
 		BeforeEach(func() {
 			env = append(env, []string{
-				fmt.Sprintf("INPUT_TGZDEPS=%s/dep1.tgz", testAssetsURL),
+				fmt.Sprintf("INPUT_DEPS=%s/dep1.tgz", testAssetsURL),
 			}...)
 		})
 
-		It("downloads and extracts the tgz dependencies to $HOME", func() {
+		It("downloads and extracts the tgz dependency to $HOME", func() {
 			Eventually(session).Should(Exit(0))
 
 			Expect(filepath.Join(testHomeDir, "dep1")).To(BeADirectory())
@@ -63,10 +63,10 @@ var _ = Describe("the dependency-action binary", func() {
 		})
 	})
 
-	When("the INPUT_TGZDEPS env var is set and has > 1 dependency", func() {
+	When("the INPUT_DEPS env var is set and contains 2 tgz file urls", func() {
 		BeforeEach(func() {
 			env = append(env, []string{
-				fmt.Sprintf("INPUT_TGZDEPS=%s/dep1.tgz,%s/dep2.tgz", testAssetsURL, testAssetsURL),
+				fmt.Sprintf("INPUT_DEPS=%s/dep1.tgz,%s/dep2.tar.gz", testAssetsURL, testAssetsURL),
 			}...)
 		})
 
@@ -81,10 +81,46 @@ var _ = Describe("the dependency-action binary", func() {
 		})
 	})
 
-	When("the INPUT_TGZDEPS env var is set to a URL that does not point to a .tgz file", func() {
+	When("the INPUT_DEPS env var is set and contains 1 txz file url", func() {
 		BeforeEach(func() {
 			env = append(env, []string{
-				"INPUT_TGZDEPS=https://github.com",
+				fmt.Sprintf("INPUT_DEPS=%s/dep3.txz", testAssetsURL),
+			}...)
+		})
+
+		It("downloads and extracts the txz dependency to $HOME", func() {
+			Eventually(session).Should(Exit(0))
+
+			Expect(filepath.Join(testHomeDir, "dep3")).To(BeADirectory())
+			Expect(filepath.Join(testHomeDir, "dep3", "bin", "cake")).To(BeAnExistingFile())
+		})
+	})
+
+	When("the INPUT_DEPS env var is set and contains a mixture of tgz and txz file urls", func() {
+		BeforeEach(func() {
+			env = append(env, []string{
+				fmt.Sprintf("INPUT_DEPS=%s/dep1.tgz,%s/dep2.tar.gz,%s/dep3.txz", testAssetsURL, testAssetsURL, testAssetsURL),
+			}...)
+		})
+
+		It("downloads and extracts all dependencies to $HOME", func() {
+			Eventually(session).Should(Exit(0))
+
+			Expect(filepath.Join(testHomeDir, "dep1")).To(BeADirectory())
+			Expect(filepath.Join(testHomeDir, "dep1", "bin", "cake")).To(BeAnExistingFile())
+
+			Expect(filepath.Join(testHomeDir, "dep2")).To(BeADirectory())
+			Expect(filepath.Join(testHomeDir, "dep2", "bin", "cake")).To(BeAnExistingFile())
+
+			Expect(filepath.Join(testHomeDir, "dep3")).To(BeADirectory())
+			Expect(filepath.Join(testHomeDir, "dep3", "bin", "cake")).To(BeAnExistingFile())
+		})
+	})
+
+	When("the INPUT_DEPS env var is set and contains a url to an unsupported filetype", func() {
+		BeforeEach(func() {
+			env = append(env, []string{
+				"INPUT_DEPS=https://github.com",
 			}...)
 		})
 
@@ -93,7 +129,7 @@ var _ = Describe("the dependency-action binary", func() {
 		})
 
 		It("prints an informative error message to stdout", func() {
-			Eventually(session.Err).Should(Say("ERROR: unable to extract file at 'https://github.com', ensure it is a valid .tar.gz file"))
+			Eventually(session.Err).Should(Say("ERROR: unable to unarchive file at 'https://github.com', ensure it is a supported filetype"))
 		})
 	})
 })

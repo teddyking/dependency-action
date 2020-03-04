@@ -2,8 +2,8 @@ name: Dependency Action
 description: Downloads and extracts dependencies required by workflow jobs.
 author: Ed King
 inputs:
-  tgzDeps:
-    description: A comma-separated list of URLs that point to .tgz files.
+  deps:
+    description: A comma-separated list of URLs that point to dependency files. Supported filetypes = .tgz, .tar.gz, .txz and .tar.xz.
     required: false
 runs:
   using: docker

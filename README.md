@@ -21,10 +21,11 @@ jobs:
     - name: Download test dependencies
       uses: teddyking/dependency-action@master
       with:
-        tgzDeps: https://dep1.tar.gz,https://dep2.tar.gz
+        deps: https://dep1.tar.gz,https://dep2.txz
     - name: Run tests
       ...
 ```
 
-The `tgzDeps` input is a comma-separated list of URLs that point to `.tar.gz` files.
+The `deps` input is a comma-separated list of URLs that point to dependency files. Supported filetypes = `.tgz`, `.tar.gz`, `.txz` and `.tar.xz`.
+
 The action will download and extract the files to `$HOME` (`/github/home`), so that they can be used during any following steps.
